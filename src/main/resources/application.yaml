@@ -1,0 +1,12 @@
+app:
+  services:
+    member:
+      url: ${MEMBER_SERVICE_URL:http://localhost:8081}
+      timeout:
+        connect: 5000
+        read: 10000
+    timeline:
+      url: ${TIMELINE_SERVICE_URL:http://localhost:8082}
+      timeout:
+        connect: 5000
+        read: 10000
