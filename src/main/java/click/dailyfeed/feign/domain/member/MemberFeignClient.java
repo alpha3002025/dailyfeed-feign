@@ -1,5 +1,6 @@
 package click.dailyfeed.feign.domain.member;
 
+import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
@@ -10,8 +11,8 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getMember(@Param("token") String token);
 
-//    @RequestLine("POST /api/members/list")
-//    Response getMemberList(MemberDto.MembersBulkRequest request);
+    @RequestLine("POST /api/members/list")
+    Response getMemberList(MemberDto.MembersBulkRequest request);
 
     @RequestLine("GET /api/members/{memberId}")
     Response getMemberById(@Param("memberId") Long memberId);

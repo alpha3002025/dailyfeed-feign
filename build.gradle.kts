@@ -32,17 +32,18 @@ repositories {
 extra["springCloudVersion"] = "2025.0.0"
 
 dependencies {
-//    implementation(project(":dailyfeed-code"))
+    implementation(project(":dailyfeed-code"))
 
     // spring
 	implementation("org.springframework.boot:spring-boot-starter-web")
     // lombok
 	compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    // apache commons
+    implementation("commons-io:commons-io:2.11.0")
 
     // resilience4j
     implementation("io.github.resilience4j:resilience4j-feign:${resilience4jVersion}")
-
     // openfeign
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("io.github.openfeign:feign-gson:${openFeignVersion}")
