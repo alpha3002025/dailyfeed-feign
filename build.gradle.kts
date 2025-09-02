@@ -4,63 +4,69 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "click.dailyfeed"
-version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+subprojects {
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
 }
 
-configurations {
-	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
-	}
-}
+allprojects {
+    group = "click.dailyfeed"
+    version = "0.0.1-SNAPSHOT"
+    description = "Demo project for Spring Boot"
 
-extra["springCloudVersion"] = "2025.0.0"
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
 
-val resilience4jVersion = "1.7.0"
-val openFeignVersion = "13.2.1"
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
 
-repositories {
-	mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-extra["springCloudVersion"] = "2025.0.0"
+    extra["springCloudVersion"] = "2025.0.0"
+    val resilience4jVersion = "1.7.0"
+    val openFeignVersion = "13.2.1"
 
-dependencies {
-    implementation(project(":dailyfeed-code"))
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        }
+    }
 
-    // spring
-	implementation("org.springframework.boot:spring-boot-starter-web")
-    // lombok
-	compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    // apache commons
-    implementation("commons-io:commons-io:2.11.0")
+    dependencies {
+        implementation(project(":dailyfeed-code"))
 
-    // resilience4j
-    implementation("io.github.resilience4j:resilience4j-feign:${resilience4jVersion}")
-    // openfeign
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-    implementation("io.github.openfeign:feign-gson:${openFeignVersion}")
-    implementation("io.github.openfeign:feign-core:${openFeignVersion}")
-    implementation("io.github.openfeign:feign-jackson:${openFeignVersion}")
+        // spring
+        implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // test
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+        // lombok
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
 
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-	}
-}
+        // apache commons
+        implementation("commons-io:commons-io:2.11.0")
 
-tasks.withType<Test> {
-	useJUnitPlatform()
+        // resilience4j
+        implementation("io.github.resilience4j:resilience4j-feign:${resilience4jVersion}")
+        // openfeign
+        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+        implementation("io.github.openfeign:feign-gson:${openFeignVersion}")
+        implementation("io.github.openfeign:feign-core:${openFeignVersion}")
+        implementation("io.github.openfeign:feign-jackson:${openFeignVersion}")
+
+        // test
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }

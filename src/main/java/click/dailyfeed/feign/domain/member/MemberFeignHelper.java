@@ -154,14 +154,14 @@ public class MemberFeignHelper {
         }
     }
 //
-//    public BooksfeedPage<FollowDto.FollowingActivity> getRecentlyActiveFollowingMembers(String token, HttpServletResponse httpResponse) {
+//    public DailyfeedPage<FollowDto.FollowingActivity> getRecentlyActiveFollowingMembers(String token, HttpServletResponse httpResponse) {
 //        Response feignResponse = memberClient.getRecentActivitiesFromFollowing(token);
 //        if (feignResponse.status() != 200) {
 //            throw new MemberNotFoundException();
 //        }
 //        try{
 //            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-//            BooksfeedPageResponse<FollowDto.FollowingActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<BooksfeedPageResponse<FollowDto.FollowingActivity>>() {});
+//            DailyfeedPageResponse<FollowDto.FollowingActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedPageResponse<FollowDto.FollowingActivity>>() {});
 //            propagateTokenRefreshHeader(feignResponse, httpResponse);
 //
 //            return apiResponse.getBody();
