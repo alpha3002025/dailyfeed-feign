@@ -70,7 +70,7 @@ public class MemberFeignClientConfig {
 
 
     /**
-     * Retryer 설정 (Resilience4j Retry와 별도)
+     * Retryer 설정 (Resilience 4j Retry와 별도)
      */
     @Bean
     public Retryer retryer() {

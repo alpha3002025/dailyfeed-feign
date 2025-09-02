@@ -10,3 +10,13 @@ app:
       timeout:
         connect: 5000
         read: 10000
+    content:
+      url: ${CONTENT_SERVICE_URL:http://localhost:8083}
+      timeout:
+        connect: 5000
+        read: 10000
+    search:
+      url: ${SEARCH_SERVICE_URL:http://localhost:8083}
+      timeout:
+        connect: 5000
+        read: 10000
