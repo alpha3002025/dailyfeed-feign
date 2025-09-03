@@ -17,13 +17,13 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class MemberFeignClientConfig {
-    @Value("${app.services.member.url}")
+    @Value("${dailyfeed.services.member.feign.url}")
     private String memberServiceUrl;
 
-    @Value("${app.services.member.timeout.connect}")
+    @Value("${dailyfeed.services.member.feign.timeout.connect}")
     private int connectTimeout;
 
-    @Value("${app.services.member.timeout.read}")
+    @Value("${dailyfeed.services.member.feign.timeout.read}")
     private int readTimeout;
 
     @Bean
