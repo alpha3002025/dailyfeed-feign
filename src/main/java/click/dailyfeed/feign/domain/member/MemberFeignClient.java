@@ -7,7 +7,7 @@ import feign.RequestLine;
 import feign.Response;
 
 public interface MemberFeignClient {
-    @RequestLine("GET /api/members")
+    @RequestLine("GET /api/members/")
     @Headers("Authorization: {token}")
     Response getMember(@Param("token") String token);
 
