@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO : feign response 처리 로직 공통화 작업 필요 🫡
 @Slf4j
 @RequiredArgsConstructor
 @Service

@@ -11,6 +11,7 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getMember(@Param("token") String token);
 
+    // TODO : 작명 새로 다시!! 🫡
     @RequestLine("POST /api/members/list")
     @Headers("Authorization: {token}")
     Response getMemberList(MemberDto.MembersBulkRequest request);
@@ -27,12 +28,12 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getMemberProfile(@Param("token") String token, @Param("memberId") Long memberId);
 
-    @RequestLine("GET /api/members/followings")
+    @RequestLine("GET /api/members/followers-followings")
     @Headers("Authorization: {token}")
-    Response getMyFollowings(@Param("token") String token);
+    Response getMyFollowersFollowings(@Param("token") String token);
 
-    @RequestLine("GET /api/members/{memberId}/followings")
+    @RequestLine("GET /api/members/{memberId}/followers-followings")
     @Headers("Authorization: {token}")
-    Response getMemberFollowingsById(@Param("token") String token);
+    Response getMemberFollowingsById(@Param("token") String token, @Param("memberId") Long memberId);
 
 }
