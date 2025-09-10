@@ -56,17 +56,45 @@ public class MemberFeignHelper {
         }
     }
 
-    // 작성자 정보 검증
-    public MemberDto.Member getMemberById(Long authorId, HttpServletResponse httpResponse) {
-        Response feignResponse = memberClient.getMemberById(authorId);
+    public MemberDto.MemberProfile getMemberFollowSummary(String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyProfile(token);
+
         if (feignResponse.status() != 200) {
             throw new MemberNotFoundException();
         }
-
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.Member>>() {});
+            DailyfeedServerResponse<MemberDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.MemberProfile>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
+    }
+
+    public List<MemberDto.Member> getMyFollowings(String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyFollowings(token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<List<MemberDto.Member>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberDto.Member>>>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
             return apiResponse.getData();
         }
         catch (Exception e){
