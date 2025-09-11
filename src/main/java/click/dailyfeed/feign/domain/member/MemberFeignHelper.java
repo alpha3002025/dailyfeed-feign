@@ -59,6 +59,34 @@ public class MemberFeignHelper {
         }
     }
 
+    public MemberDto.Member getMemberById(Long id, String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMemberById(id, token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.Member>>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
+    }
+
     public MemberDto.MemberProfile getMemberFollowSummary(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyProfile(token);
 
