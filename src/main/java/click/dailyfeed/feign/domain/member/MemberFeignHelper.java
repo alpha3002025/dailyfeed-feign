@@ -177,7 +177,7 @@ public class MemberFeignHelper {
     // allAuthorIds 는 /api/follow 로부터 Page 기반으로 받아온 일정 범위의 최신 사용자이므로 allAuthorIds 가 커져서
     // 요청이 비대해질 일은 없다.
     public List<MemberDto.Member> getMembersList(Set<Long> allAuthorIds, HttpServletResponse httpResponse) {
-        MemberDto.MembersBulkRequest request = MemberDto.MembersBulkRequest.builder()
+        MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(allAuthorIds))
                 .build();
 
@@ -209,7 +209,7 @@ public class MemberFeignHelper {
     }
 
     public Map<Long, MemberDto.Member> getMemberMap(Set<Long> authorIds, HttpServletResponse httpResponse) {
-        MemberDto.MembersBulkRequest request = MemberDto.MembersBulkRequest.builder()
+        MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(authorIds))
                 .build();
 
