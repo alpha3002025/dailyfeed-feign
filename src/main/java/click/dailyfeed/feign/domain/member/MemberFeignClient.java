@@ -1,10 +1,8 @@
 package click.dailyfeed.feign.domain.member;
 
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
-import feign.Headers;
-import feign.Param;
-import feign.RequestLine;
-import feign.Response;
+import click.dailyfeed.feign.config.feign.JacksonExpander;
+import feign.*;
 
 public interface MemberFeignClient {
     ///  my
@@ -27,9 +25,10 @@ public interface MemberFeignClient {
 
     ///  특정 용도
     // TODO : 작명 새로 다시!! 🫡
-    @RequestLine("POST /api/members/list")
+    @RequestLine("POST /api/members/query/in")
     @Headers("Authorization: {token}")
-    Response getMemberList(MemberDto.MembersBulkRequest request);
+    @Body("{query}")
+    Response getMemberList(@Param(value = "query", expander = JacksonExpander.class) MemberDto.MembersIdsQuery query);
 
 
     ///  {memberId}
