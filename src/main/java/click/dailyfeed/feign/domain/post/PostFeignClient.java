@@ -1,7 +1,7 @@
 package click.dailyfeed.feign.domain.post;
 
 import click.dailyfeed.code.domain.content.post.dto.PostDto;
-import click.dailyfeed.feign.config.JacksonExpander;
+import click.dailyfeed.feign.config.feign.JacksonExpander;
 import feign.Body;
 import feign.Headers;
 import feign.Param;

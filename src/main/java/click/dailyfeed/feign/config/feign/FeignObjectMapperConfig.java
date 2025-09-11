@@ -1,4 +1,4 @@
-package click.dailyfeed.feign.config;
+package click.dailyfeed.feign.config.feign;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

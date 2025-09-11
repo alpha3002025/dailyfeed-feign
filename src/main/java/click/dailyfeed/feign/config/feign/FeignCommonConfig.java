@@ -1,4 +1,4 @@
-package click.dailyfeed.feign.config;
+package click.dailyfeed.feign.config.feign;
 
 import feign.Logger;
 import feign.Request;

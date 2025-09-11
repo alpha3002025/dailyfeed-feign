@@ -1,6 +1,6 @@
-package click.dailyfeed.feign.config;
+package click.dailyfeed.feign.config.feign;
 
-import click.dailyfeed.feign.domain.post.PostFeignClient;
+import click.dailyfeed.feign.domain.member.MemberFeignClient;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import io.github.resilience4j.feign.FeignDecorators;
@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class PostFeignClientConfig {
-    @Value("${dailyfeed.services.content.feign.url}")
+public class MemberFeignClientConfig {
+    @Value("${dailyfeed.services.member.feign.url}")
     private String memberServiceUrl;
 
     @Bean
-    public PostFeignClient postFeignClient() {
+    public MemberFeignClient memberFeignClient() {
         FeignDecorators feignDecorators = FeignDecorators.builder()
 //                .withCircuitBreaker()
 //                .withRateLimiter()
@@ -25,6 +25,6 @@ public class PostFeignClientConfig {
                 .builder(feignDecorators)
                 .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
-                .target(PostFeignClient.class, memberServiceUrl);
+                .target(MemberFeignClient.class, memberServiceUrl);
     }
 }
