@@ -2,7 +2,6 @@ package click.dailyfeed.feign.domain.post;
 
 import click.dailyfeed.code.domain.content.post.dto.PostDto;
 import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
-import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
 import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
