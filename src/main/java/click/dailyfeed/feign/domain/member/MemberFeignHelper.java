@@ -88,7 +88,7 @@ public class MemberFeignHelper {
     }
 
     // todo (페이징처리가 필요하다) 페이징, token 처리 AOP 적용 🫡
-    public FollowDto.Follow getMyFollowersFollowings(String token, HttpServletResponse httpResponse) {
+    public FollowDto.FollowPage getMyFollowersFollowings(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowersFollowings(token);
 
         if (feignResponse.status() != 200) {
@@ -96,7 +96,7 @@ public class MemberFeignHelper {
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<FollowDto.Follow> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            DailyfeedServerResponse<FollowDto.FollowPage> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -117,15 +117,15 @@ public class MemberFeignHelper {
     }
 
     // todo (페이징처리가 필요하다) 페이징, token 처리 AOP 적용 🫡
-    public FollowDto.Follow getAnotherMembersFollowersFollowings(Long memberId, String token, HttpServletResponse httpResponse) {
-        Response feignResponse = memberClient.getMemberFollowingsById(token, memberId);
+    public List<FollowDto.Following> getMyFollowingMembers(String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyFollowingMembers(token);
 
         if (feignResponse.status() != 200) {
             throw new MemberNotFoundException();
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<FollowDto.Follow> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            DailyfeedServerResponse<List<FollowDto.Following>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
