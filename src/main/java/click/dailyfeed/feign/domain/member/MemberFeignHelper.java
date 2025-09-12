@@ -20,8 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO : feign response 처리 로직 공통화 작업 필요 🫡
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -115,7 +113,7 @@ public class MemberFeignHelper {
         }
     }
 
-    // todo (페이징처리가 필요하다) 페이징, token 처리 AOP 적용 🫡
+    // todo (페이징처리가 필요하다) 페이징
     public FollowDto.FollowPage getMyFollowersFollowings(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowersFollowings(token);
 
@@ -144,7 +142,6 @@ public class MemberFeignHelper {
         }
     }
 
-    // todo (페이징처리가 필요하다) 페이징, token 처리 AOP 적용 🫡
     public List<FollowDto.Following> getMyFollowingMembers(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowingMembers(token);
 
