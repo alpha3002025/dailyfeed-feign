@@ -18,6 +18,14 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getMyFollowersFollowings(@Param("token") String token);
 
+    @RequestLine("GET /api/members/followers/more")
+    @Headers("Authorization: {token}")
+    Response getMyFollowersMore(@Param("token") String token);
+
+    @RequestLine("GET /api/members/followings/more")
+    @Headers("Authorization: {token}")
+    Response getMyFollowingsMore(@Param("token") String token);
+
     ///  특정 용도
     @RequestLine("POST /api/members/query/in")
     @Headers("Authorization: {token}")
@@ -44,4 +52,11 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getFollowersFollowingMembersById(@Param("token") String token, @Param("memberId") Long memberId);
 
+    @RequestLine("GET /api/members/{memberId}/followers/more")
+    @Headers("Authorization: {token}")
+    Response getFollowersMoreById(@Param("token") String token, @Param("memberId") Long memberId);
+
+    @RequestLine("GET /api/members/{memberId}/followings/more")
+    @Headers("Authorization: {token}")
+    Response getFollowingsMoreById(@Param("token") String token, @Param("memberId") Long memberId);
 }
