@@ -114,15 +114,15 @@ public class MemberFeignHelper {
     }
 
     // todo (페이징처리가 필요하다) 페이징
-    public FollowDto.FollowPage getMyFollowersFollowings(String token, HttpServletResponse httpResponse) {
-        Response feignResponse = memberClient.getMyFollowersFollowings(token);
+    public FollowDto.FollowScrollPage getMyFollowersFollowings(Integer page, Integer size, String sort, String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyFollowersFollowings(token, page, size, sort);
 
         if (feignResponse.status() != 200) {
             throw new MemberNotFoundException();
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<FollowDto.FollowPage> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            DailyfeedServerResponse<FollowDto.FollowScrollPage> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
