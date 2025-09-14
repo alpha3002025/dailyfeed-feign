@@ -53,8 +53,6 @@ public interface MemberFeignClient {
     Response getMyFollowingMembers(@Param("token") String token);
 
     ///  {memberId}
-    //  TODO (삭제 or 통합조회 API 검토) : member 하나만 달랑 들고오는 교과서적인 REST API 는 없다.
-    //   member 처럼 다양한 특성을 가진 케이스의 경우 사실상 모든걸 때려박아서 가져오는 API 는 불가능하다고 보임
     @RequestLine("GET /api/members/{memberId}")
     @Headers("Authorization: {token}")
     Response getMemberById(@Param("memberId") Long memberId,  @Param("token") String token);

@@ -3,6 +3,7 @@ package click.dailyfeed.feign.domain.member;
 import click.dailyfeed.code.domain.member.follow.dto.FollowDto;
 import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
+import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
 import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
@@ -85,15 +86,15 @@ public class MemberFeignHelper {
         }
     }
 
-    public MemberDto.MemberProfile getMemberFollowSummary(String token, HttpServletResponse httpResponse) {
-        Response feignResponse = memberClient.getMyProfile(token);
+    public MemberProfileDto.MemberProfile getMemberProfileById(Long memberId, String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getProfileById(token, memberId);
 
         if (feignResponse.status() != 200) {
             throw new MemberNotFoundException();
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<MemberDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.MemberProfile>>() {});
+            DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -113,7 +114,6 @@ public class MemberFeignHelper {
         }
     }
 
-    // todo (페이징처리가 필요하다) 페이징
     public FollowDto.FollowScrollPage getMyFollowersFollowings(Integer page, Integer size, String sort, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowersFollowings(token, page, size, sort);
 
@@ -142,7 +142,7 @@ public class MemberFeignHelper {
         }
     }
 
-    public List<FollowDto.Following> getMyFollowingMembers(String token, HttpServletResponse httpResponse) {
+    public List<MemberProfileDto.Summary> getMyFollowingMembers(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowingMembers(token);
 
         if (feignResponse.status() != 200) {
@@ -150,7 +150,7 @@ public class MemberFeignHelper {
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<FollowDto.Following>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -173,7 +173,7 @@ public class MemberFeignHelper {
     // 참고)
     // allAuthorIds 는 /api/follow 로부터 Page 기반으로 받아온 일정 범위의 최신 사용자이므로 allAuthorIds 가 커져서
     // 요청이 비대해질 일은 없다.
-    public List<MemberDto.Member> getMembersList(Set<Long> allAuthorIds, HttpServletResponse httpResponse) {
+    public List<MemberProfileDto.Summary> getMembersList(Set<Long> allAuthorIds, HttpServletResponse httpResponse) {
         MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(allAuthorIds))
                 .build();
@@ -185,7 +185,7 @@ public class MemberFeignHelper {
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberDto.Member>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberDto.Member>>>() {});
+            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -205,7 +205,7 @@ public class MemberFeignHelper {
         }
     }
 
-    public Map<Long, MemberDto.Member> getMemberMap(Set<Long> authorIds, HttpServletResponse httpResponse) {
+    public Map<Long, MemberProfileDto.Summary> getMemberMap(Set<Long> authorIds, HttpServletResponse httpResponse) {
         MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(authorIds))
                 .build();
@@ -219,11 +219,11 @@ public class MemberFeignHelper {
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberDto.Member>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberDto.Member>>>() {});
+            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            List<MemberDto.Member> authors = apiResponse.getData();
-            return authors.stream().collect(Collectors.toMap(MemberDto.Member::getId, author -> author));
+            List<MemberProfileDto.Summary> authors = apiResponse.getData();
+            return authors.stream().collect(Collectors.toMap(MemberProfileDto.Summary::getMemberId, author -> author));
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
