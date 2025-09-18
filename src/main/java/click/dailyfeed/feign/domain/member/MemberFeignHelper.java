@@ -41,7 +41,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -69,7 +69,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.Member>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -97,7 +97,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -125,7 +125,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<MemberProfileDto.Summary> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.Summary>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -154,7 +154,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<FollowDto.FollowScrollPage> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -182,7 +182,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -217,7 +217,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -251,7 +251,7 @@ public class MemberFeignHelper {
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            List<MemberProfileDto.Summary> authors = apiResponse.getData();
+            List<MemberProfileDto.Summary> authors = apiResponse.getContent();
             return authors.stream().collect(Collectors.toMap(MemberProfileDto.Summary::getMemberId, author -> author));
         }
         catch (Exception e){
