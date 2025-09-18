@@ -42,7 +42,7 @@ public class PostFeignHelper {
             DailyfeedServerResponse<List<PostDto.Post>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<PostDto.Post>>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
-            return apiResponse.getData();
+            return apiResponse.getContent();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
