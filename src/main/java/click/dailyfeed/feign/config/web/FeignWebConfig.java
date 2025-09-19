@@ -9,7 +9,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+public class FeignWebConfig implements WebMvcConfigurer {
     private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
     @Override
