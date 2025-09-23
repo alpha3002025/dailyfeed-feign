@@ -66,18 +66,18 @@ public class FeignGlobalControllerAdvice {
         );
     }
 
-    @ExceptionHandler(Exception.class)
-    public DailyfeedErrorResponse handleException(
-            Exception e,
-            HttpServletRequest request
-    ){
-        log.error("Unexpected exception occurred", e);
-
-        return DailyfeedErrorResponse.of(
-                500,
-                ResponseSuccessCode.FAIL,
-                "서버 내부 오류가 발생했습니다.",
-                request.getRequestURI()
-        );
-    }
+//    @ExceptionHandler(Exception.class)
+//    public DailyfeedErrorResponse handleException(
+//            Exception e,
+//            HttpServletRequest request
+//    ){
+//        log.error("Unexpected exception occurred", e);
+//
+//        return DailyfeedErrorResponse.of(
+//                500,
+//                ResponseSuccessCode.FAIL,
+//                "서버 내부 오류가 발생했습니다.",
+//                request.getRequestURI()
+//        );
+//    }
 }

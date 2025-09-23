@@ -1,6 +1,7 @@
 package click.dailyfeed.feign.config.feign;
 
 import click.dailyfeed.feign.domain.member.MemberFeignClient;
+import feign.codec.ErrorDecoder;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import io.github.resilience4j.feign.FeignDecorators;
@@ -15,7 +16,9 @@ public class MemberFeignClientConfig {
     private String memberServiceUrl;
 
     @Bean
-    public MemberFeignClient memberFeignClient() {
+    public MemberFeignClient memberFeignClient(
+            ErrorDecoder customErrorDecoder
+    ) {
         FeignDecorators feignDecorators = FeignDecorators.builder()
 //                .withCircuitBreaker()
 //                .withRateLimiter()
@@ -25,6 +28,7 @@ public class MemberFeignClientConfig {
                 .builder(feignDecorators)
                 .encoder(new GsonEncoder())
                 .decoder(new GsonDecoder())
+                .errorDecoder(customErrorDecoder)
                 .target(MemberFeignClient.class, memberServiceUrl);
     }
 }

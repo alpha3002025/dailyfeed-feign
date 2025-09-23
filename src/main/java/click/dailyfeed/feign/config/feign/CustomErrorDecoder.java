@@ -13,6 +13,8 @@ public class CustomErrorDecoder implements ErrorDecoder {
                 return new IllegalArgumentException("Bad Request: " + methodKey);
             case 401:
                 return new SecurityException("Unauthorized: " + methodKey);
+            case 403:
+                return new RuntimeException("Forbidden: " + methodKey);
             case 404:
                 return new RuntimeException("Not Found: " + methodKey);
             case 500:
