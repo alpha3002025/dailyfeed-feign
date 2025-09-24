@@ -1,7 +1,8 @@
-package click.dailyfeed.feign.config.web;
+package click.dailyfeed.feign.config.web.resolver;
 
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import click.dailyfeed.code.global.jwt.exception.BearerTokenMissingException;
+import click.dailyfeed.feign.config.web.annotation.AuthenticatedMember;
 import click.dailyfeed.feign.domain.member.MemberFeignHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

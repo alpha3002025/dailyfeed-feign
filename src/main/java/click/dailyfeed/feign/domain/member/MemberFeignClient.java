@@ -14,6 +14,10 @@ public interface MemberFeignClient {
     @Headers("Authorization: {token}")
     Response getMyProfile(@Param("token") String token);
 
+    @RequestLine("GET /api/members/summary")
+    @Headers("Authorization: {token}")
+    Response getMyProfileSummary(@Param("token") String token);
+
     @RequestLine("GET /api/members/followers-followings?page={page}&size={size}&sort={sort}")
     @Headers("Authorization: {token}")
     Response getMyFollowersFollowings(
@@ -45,7 +49,10 @@ public interface MemberFeignClient {
     @RequestLine("POST /api/members/query/in")
     @Headers("Authorization: {token}")
     @Body("{query}")
-    Response getMemberList(@Param(value = "query", expander = JacksonExpander.class) MemberDto.MembersIdsQuery query);
+    Response getMemberList(
+            @Param(value = "query", expander = JacksonExpander.class) MemberDto.MembersIdsQuery query,
+            @Param("token") String token
+    );
 
     @RequestLine("GET /api/members/query/followings")
     @Headers("Authorization: {token}")

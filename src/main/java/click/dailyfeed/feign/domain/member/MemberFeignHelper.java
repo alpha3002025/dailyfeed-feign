@@ -86,6 +86,62 @@ public class MemberFeignHelper {
         }
     }
 
+    public MemberProfileDto.MemberProfile getMyProfile(String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyProfile(token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
+    }
+
+    public MemberProfileDto.Summary getMyProfileSummary(String token, HttpServletResponse httpResponse) {
+        Response feignResponse = memberClient.getMyProfileSummary(token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<MemberProfileDto.Summary> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.Summary>>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
+    }
+
     public MemberProfileDto.MemberProfile getMemberProfileById(Long memberId, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getProfileById(token, memberId);
 
@@ -202,12 +258,12 @@ public class MemberFeignHelper {
     // 참고)
     // allAuthorIds 는 /api/follow 로부터 Page 기반으로 받아온 일정 범위의 최신 사용자이므로 allAuthorIds 가 커져서
     // 요청이 비대해질 일은 없다.
-    public List<MemberProfileDto.Summary> getMembersList(Set<Long> allAuthorIds, HttpServletResponse httpResponse) {
+    public List<MemberProfileDto.Summary> getMembersList(Set<Long> allAuthorIds, String token, HttpServletResponse httpResponse) {
         MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(allAuthorIds))
                 .build();
 
-        Response feignResponse = memberClient.getMemberList(request);
+        Response feignResponse = memberClient.getMemberList(request, token);
         if (feignResponse.status() != 200) {
             throw new MemberNotFoundException();
         }
@@ -234,16 +290,16 @@ public class MemberFeignHelper {
         }
     }
 
-    public Map<Long, MemberProfileDto.Summary> getMemberMap(Set<Long> authorIds, HttpServletResponse httpResponse) {
+    public Map<Long, MemberProfileDto.Summary> getMemberMap(Set<Long> authorIds, String token, HttpServletResponse httpResponse) {
         MemberDto.MembersIdsQuery request = MemberDto.MembersIdsQuery.builder()
                 .ids(new ArrayList<>(authorIds))
                 .build();
 
-        Response feignResponse = memberClient.getMemberList(request);
+        Response feignResponse = memberClient.getMemberList(request, token);
         propagateTokenRefreshHeader(feignResponse, httpResponse);
 
         if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
+            throw new MemberApiConnectionErrorException();
         }
 
         try{

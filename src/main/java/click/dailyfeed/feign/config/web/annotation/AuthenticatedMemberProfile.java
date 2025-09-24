@@ -1,4 +1,4 @@
-package click.dailyfeed.feign.config.web;
+package click.dailyfeed.feign.config.web.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthenticatedMember {
+public @interface AuthenticatedMemberProfile {
 }
