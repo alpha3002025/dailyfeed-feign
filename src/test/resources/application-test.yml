@@ -1,0 +1,5 @@
+logging:
+  level:
+    click.dailyfeed.feign.domain.member.MemberFeignClient: DEBUG
+    feign: DEBUG
+    feign.Logger: DEBUG

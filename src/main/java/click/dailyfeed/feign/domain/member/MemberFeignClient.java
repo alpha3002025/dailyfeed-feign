@@ -1,7 +1,6 @@
 package click.dailyfeed.feign.domain.member;
 
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
-import click.dailyfeed.feign.config.feign.JacksonExpander;
 import feign.*;
 
 public interface MemberFeignClient {
@@ -47,10 +46,9 @@ public interface MemberFeignClient {
 
     ///  특정 용도
     @RequestLine("POST /api/members/query/in")
-    @Headers("Authorization: {token}")
-    @Body("{query}")
+    @Headers({"Authorization: {token}", "Content-Type: application/json"})
     Response getMemberList(
-            @Param(value = "query", expander = JacksonExpander.class) MemberDto.MembersIdsQuery query,
+            MemberDto.MembersIdsQuery query,
             @Param("token") String token
     );
 
