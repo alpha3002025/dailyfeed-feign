@@ -10,7 +10,7 @@ import feign.Response;
 
 public interface PostFeignClient {
     ///  bulk 조회 (특정 id list 에 해당하는 글의 목록 조회)
-    @RequestLine("POST /api/posts/list")
+    @RequestLine("POST /api/posts/query/list")
     @Headers({"Content-Type: application/json", "Authorization: {token}"})
     @Body("{request}")
     Response getPostList(@Param(value = "request", expander = JacksonExpander.class) PostDto.PostsBulkRequest request,
