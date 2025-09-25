@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
-@ControllerAdvice
-@Order(Ordered.LOWEST_PRECEDENCE) // 가장 낮은 우선순위
+//@ControllerAdvice
+//@Order(Ordered.LOWEST_PRECEDENCE) // 가장 낮은 우선순위
 public class FeignGlobalControllerAdvice {
 
     @ExceptionHandler(JwtException.class)

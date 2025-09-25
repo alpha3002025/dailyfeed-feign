@@ -41,8 +41,19 @@ public class PostFeignClientConfig {
                 .logLevel(feignLoggerLevel)
                 .options(requestOptions)
                 .requestInterceptor(template -> {
+                    // Content-Type 처리
                     if ("POST".equals(template.method()) && !template.headers().containsKey("Content-Type")) {
                         template.header("Content-Type", "application/json");
+                    }
+
+                    // Authorization 헤더에 Bearer 접두사 추가
+                    if (template.headers().containsKey("Authorization")) {
+                        template.headers().get("Authorization").forEach(value -> {
+                            if (!value.startsWith("Bearer ")) {
+                                template.removeHeader("Authorization");
+                                template.header("Authorization", "Bearer " + value);
+                            }
+                        });
                     }
                 })
                 .target(PostFeignClient.class, postServiceUrl);
