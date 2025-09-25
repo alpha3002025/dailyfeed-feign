@@ -5,10 +5,12 @@ import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
+import click.dailyfeed.code.domain.member.member.exception.MemberFeignSerializeFailException;
 import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import feign.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,11 @@ public class MemberFeignHelper {
 
             return apiResponse.getData();
         }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
+        }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
         }
@@ -70,6 +77,11 @@ public class MemberFeignHelper {
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
+        }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -99,6 +111,11 @@ public class MemberFeignHelper {
 
             return apiResponse.getData();
         }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
+        }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
         }
@@ -126,6 +143,11 @@ public class MemberFeignHelper {
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
+        }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -155,6 +177,11 @@ public class MemberFeignHelper {
 
             return apiResponse.getData();
         }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
+        }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
         }
@@ -182,6 +209,11 @@ public class MemberFeignHelper {
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
+        }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -212,6 +244,11 @@ public class MemberFeignHelper {
 
             return apiResponse.getData();
         }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
+        }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
         }
@@ -239,6 +276,11 @@ public class MemberFeignHelper {
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
+        }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
@@ -275,6 +317,11 @@ public class MemberFeignHelper {
 
             return apiResponse.getData();
         }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
+        }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();
         }
@@ -309,6 +356,11 @@ public class MemberFeignHelper {
 
             List<MemberProfileDto.Summary> authors = apiResponse.getData();
             return authors.stream().collect(Collectors.toMap(MemberProfileDto.Summary::getMemberId, author -> author));
+        }
+        catch (InvalidFormatException e){
+            log.error("feign exception {} ", e.getMessage());
+            e.printStackTrace();
+            throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
             throw new MemberApiConnectionErrorException();

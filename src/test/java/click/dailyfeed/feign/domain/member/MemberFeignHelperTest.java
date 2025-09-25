@@ -37,4 +37,9 @@ public class MemberFeignHelperTest {
         MemberProfileDto.Summary memberSummaryById = memberFeignHelper.getMemberSummaryById(2L, TEST_TOKEN, null);
         System.out.println(memberSummaryById.toString());
     }
+
+    @Test
+    void getMemberMap_사용자정보조회_by_memberId(){
+
+    }
 }
