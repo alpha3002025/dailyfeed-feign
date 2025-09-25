@@ -34,13 +34,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
         HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
 
         String authHeader = request.getHeader("Authorization");
-        String jwt = "";
-        if (authHeader.startsWith("Bearer ")) {
-            jwt = extractToken(authHeader);
-        }
-        else{
-            jwt = authHeader;
-        }
+        String jwt = extractToken(authHeader);
 
         // JWT 검증 및 멤버 추출 (예외 발생 가능)
         return memberFeignHelper.getMember(jwt, response);
