@@ -1,6 +1,5 @@
 package click.dailyfeed.feign.config.feign;
 
-import click.dailyfeed.feign.domain.member.MemberFeignClient;
 import click.dailyfeed.feign.domain.post.PostFeignClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
@@ -19,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PostFeignClientConfig {
     @Value("${dailyfeed.services.content.feign.url}")
-    private String memberServiceUrl;
+    private String postServiceUrl;
 
     @Bean
     public PostFeignClient postFeignClient(
@@ -38,7 +37,7 @@ public class PostFeignClientConfig {
                 .encoder(new JacksonEncoder(feignObjectMapper))
                 .decoder(new JacksonDecoder(feignObjectMapper))
                 .errorDecoder(customErrorDecoder)
-                .logger(new Slf4jLogger(MemberFeignClient.class))
+                .logger(new Slf4jLogger(PostFeignClient.class))
                 .logLevel(feignLoggerLevel)
                 .options(requestOptions)
                 .requestInterceptor(template -> {
@@ -46,6 +45,6 @@ public class PostFeignClientConfig {
                         template.header("Content-Type", "application/json");
                     }
                 })
-                .target(PostFeignClient.class, memberServiceUrl);
+                .target(PostFeignClient.class, postServiceUrl);
     }
 }
