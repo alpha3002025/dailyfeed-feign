@@ -9,6 +9,10 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
 }
 
+val springCloudVersion = "2025.0.0"
+val resilience4jVersion = "1.7.0"
+val openFeignVersion = "13.2.1"
+
 allprojects {
     group = "click.dailyfeed"
     version = "0.0.1-SNAPSHOT"
@@ -30,13 +34,9 @@ allprojects {
         mavenCentral()
     }
 
-    extra["springCloudVersion"] = "2025.0.0"
-    val resilience4jVersion = "1.7.0"
-    val openFeignVersion = "13.2.1"
-
     dependencyManagement {
         imports {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
         }
     }
 
@@ -60,6 +60,7 @@ allprojects {
         implementation("io.github.openfeign:feign-gson:${openFeignVersion}")
         implementation("io.github.openfeign:feign-core:${openFeignVersion}")
         implementation("io.github.openfeign:feign-jackson:${openFeignVersion}")
+        implementation("io.github.openfeign:feign-slf4j:${openFeignVersion}")
 
         // test
         testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -4,7 +4,6 @@ import feign.Logger;
 import feign.Request;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,11 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class FeignCommonConfig {
-    @Value("${dailyfeed.services.content.feign.timeout.connect}")
-    private int connectTimeout;
-
-    @Value("${dailyfeed.services.content.feign.timeout.read}")
-    private int readTimeout;
+    // TODO 아하하하하하 귀찮아서 상수로 지정했어요. SEASON2 쯤? 고쳐볼께요... 흑...
+    private final int connectTimeout = 5;
+    private final int readTimeout = 5;
 
     /**
      * Feign Logger Level 설정
