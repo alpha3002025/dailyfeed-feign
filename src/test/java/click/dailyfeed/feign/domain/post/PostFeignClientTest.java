@@ -3,7 +3,7 @@ package click.dailyfeed.feign.domain.post;
 import click.dailyfeed.code.domain.content.post.dto.PostDto;
 import click.dailyfeed.feign.config.feign.FeignCommonConfig;
 import click.dailyfeed.feign.config.feign.FeignObjectMapperConfig;
-import click.dailyfeed.feign.config.feign.PostFeignClientConfig;
+import click.dailyfeed.feign.config.feign.client.PostFeignClientConfig;
 import feign.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

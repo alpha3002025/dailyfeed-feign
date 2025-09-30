@@ -1,6 +1,6 @@
-package click.dailyfeed.feign.config.feign;
+package click.dailyfeed.feign.config.feign.client;
 
-import click.dailyfeed.feign.domain.member.MemberFeignClient;
+import click.dailyfeed.feign.domain.image.ImageFeignClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
 import feign.Request;
@@ -16,20 +16,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MemberFeignClientConfig {
-    @Value("${dailyfeed.services.member.feign.url}")
-    private String memberServiceUrl;
+public class ImageFeignClientConfig {
+    @Value("${dailyfeed.services.image.feign.url}")
+    private String imageServiceUrl;
 
     @Bean
-    public MemberFeignClient memberFeignClient(
+    public ImageFeignClient imageFeignClient(
             ErrorDecoder customErrorDecoder,
             @Qualifier("feignObjectMapper") ObjectMapper feignObjectMapper,
             Logger.Level feignLoggerLevel,
             Request.Options requestOptions
     ) {
         FeignDecorators feignDecorators = FeignDecorators.builder()
-//                .withCircuitBreaker()
-//                .withRateLimiter()
                 .build();
 
         return Resilience4jFeign
@@ -37,16 +35,14 @@ public class MemberFeignClientConfig {
                 .encoder(new JacksonEncoder(feignObjectMapper))
                 .decoder(new JacksonDecoder(feignObjectMapper))
                 .errorDecoder(customErrorDecoder)
-                .logger(new Slf4jLogger(MemberFeignClient.class))
+                .logger(new Slf4jLogger(ImageFeignClient.class))
                 .logLevel(feignLoggerLevel)
                 .options(requestOptions)
                 .requestInterceptor(template -> {
-                    // Content-Type 처리
                     if ("POST".equals(template.method()) && !template.headers().containsKey("Content-Type")) {
                         template.header("Content-Type", "application/json");
                     }
 
-                    // Authorization 헤더에 Bearer 접두사 추가
                     if (template.headers().containsKey("Authorization")) {
                         template.headers().get("Authorization").forEach(value -> {
                             if (!value.startsWith("Bearer ")) {
@@ -56,6 +52,6 @@ public class MemberFeignClientConfig {
                         });
                     }
                 })
-                .target(MemberFeignClient.class, memberServiceUrl);
+                .target(ImageFeignClient.class, imageServiceUrl);
     }
 }

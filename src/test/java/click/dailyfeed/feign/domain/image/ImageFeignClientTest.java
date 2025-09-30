@@ -3,7 +3,7 @@ package click.dailyfeed.feign.domain.image;
 import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.feign.config.feign.FeignCommonConfig;
 import click.dailyfeed.feign.config.feign.FeignObjectMapperConfig;
-import click.dailyfeed.feign.config.feign.ImageFeignClientConfig;
+import click.dailyfeed.feign.config.feign.client.ImageFeignClientConfig;
 import feign.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
