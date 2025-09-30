@@ -30,6 +30,34 @@ public class TimelineFeignHelper {
     @Qualifier("feignObjectMapper")
     private final ObjectMapper feignObjectMapper;
 
+    public PostDto.Post getPostById(Long postId, String token, HttpServletResponse httpResponse) {
+        Response feignResponse = timelineFeignClient.getPostById(postId, token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<PostDto.Post> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
+    }
+
 
     public List<PostDto.Post> getPostList(PostDto.PostsBulkRequest request ,String token, HttpServletResponse httpResponse) {
         Response feignResponse = timelineFeignClient.getPostList(request, token);

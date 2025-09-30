@@ -12,4 +12,11 @@ public interface TimelineFeignClient {
     @Headers({"Authorization: Bearer {token}", "Content-Type: application/json"})
     Response getPostList(PostDto.PostsBulkRequest request,
                          @Param("token") String token);
+
+    ///  특정 id 에 해당하는 게시글 상세 조회
+    @RequestLine("GET /api/timeline/posts/{postId}")
+    @Headers({"Authorization: Bearer {token}", "Content-Type: application/json"})
+    Response getPostById(@Param("postId") Long postId,
+                         @Param("token") String token);
+
 }
