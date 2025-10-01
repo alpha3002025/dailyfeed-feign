@@ -4,6 +4,7 @@ import click.dailyfeed.code.domain.content.post.dto.PostDto;
 import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
 import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
+import click.dailyfeed.code.domain.timeline.statistics.TimelineStatisticsDto;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +59,6 @@ public class TimelineFeignHelper {
         }
     }
 
-
     public List<PostDto.Post> getPostList(PostDto.PostsBulkRequest request ,String token, HttpServletResponse httpResponse) {
         Response feignResponse = timelineFeignClient.getPostList(request, token);
 
@@ -90,6 +90,34 @@ public class TimelineFeignHelper {
     public Map<Long, PostDto.Post> getPostMap(PostDto.PostsBulkRequest request ,String token, HttpServletResponse httpResponse) {
         List<PostDto.Post> postList = getPostList(request, token, httpResponse);
         return postList.stream().collect(Collectors.toMap(PostDto.Post::getId, post -> post));
+    }
+
+    public TimelineStatisticsDto.PostItemCounts getPostItemCounts(Long postId, String token, HttpServletResponse httpResponse) {
+        Response feignResponse = timelineFeignClient.getPostById(postId, token);
+
+        if (feignResponse.status() != 200) {
+            throw new MemberNotFoundException();
+        }
+        try{
+            String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+            DailyfeedServerResponse<TimelineStatisticsDto.PostItemCounts> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
+            propagateTokenRefreshHeader(feignResponse, httpResponse);
+
+            return apiResponse.getData();
+        }
+        catch (Exception e){
+            throw new MemberApiConnectionErrorException();
+        }
+        finally {
+            if( feignResponse.body() != null ){
+                try {
+                    feignResponse.body().close();
+                }
+                catch (Exception e){
+                    log.error("feign response close error", e);
+                }
+            }
+        }
     }
 
     public void propagateTokenRefreshHeader(Response feignResponse, HttpServletResponse httpResponse) {

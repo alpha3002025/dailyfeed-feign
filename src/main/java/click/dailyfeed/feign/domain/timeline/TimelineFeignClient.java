@@ -19,4 +19,11 @@ public interface TimelineFeignClient {
     Response getPostById(@Param("postId") Long postId,
                          @Param("token") String token);
 
+
+    ///  특정 id 에 해당하는 게시글 상세 조회
+    @RequestLine("GET /api/timeline/statistics/posts/{postId}")
+    @Headers({"Authorization: Bearer {token}", "Content-Type: application/json"})
+    Response getPostItemCounts(@Param("postId") Long postId,
+                               @Param("token") String token);
+
 }
