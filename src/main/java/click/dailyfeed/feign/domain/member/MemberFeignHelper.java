@@ -6,7 +6,9 @@ import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
 import click.dailyfeed.code.domain.member.member.exception.MemberFeignSerializeFailException;
+import click.dailyfeed.code.domain.member.member.exception.MemberForbiddenException;
 import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
+import click.dailyfeed.code.domain.member.member.exception.MemberUnauthorizedException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,16 +101,50 @@ public class MemberFeignHelper {
     }
 
     public MemberProfileDto.MemberProfile getMyProfile(String token, HttpServletResponse httpResponse) {
+        log.debug("Calling member service getMyProfile with token starting with: {}...",
+                  token != null && token.length() > 20 ? token.substring(0, 20) : "null");
+
         Response feignResponse = memberClient.getMyProfile(token);
+        log.debug("Member service getMyProfile response status: {}", feignResponse.status());
 
         if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
+            String errorBody = null;
+            try {
+                if (feignResponse.body() != null) {
+                    errorBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
+                }
+            } catch (Exception e) {
+                log.error("Failed to read error response body", e);
+            }
+
+            log.error("Member service getMyProfile failed - status: {}, body: {}",
+                      feignResponse.status(), errorBody);
+
+            // HTTP 상태 코드에 따른 적절한 예외 처리
+            int status = feignResponse.status();
+            if (status == 401) {
+                log.error("Unauthorized request to member service - invalid or expired token");
+                throw new MemberUnauthorizedException();
+            } else if (status == 403) {
+                log.error("Forbidden request to member service - insufficient permissions");
+                throw new MemberForbiddenException();
+            } else if (status == 404) {
+                log.error("Member not found in member service");
+                throw new MemberNotFoundException();
+            } else if (status >= 500) {
+                log.error("Member service internal error - status: {}", status);
+                throw new MemberApiConnectionErrorException();
+            } else {
+                log.error("Unexpected member service error - status: {}", status);
+                throw new MemberApiConnectionErrorException();
+            }
         }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
+            log.debug("Successfully retrieved member profile from member service");
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -117,6 +153,7 @@ public class MemberFeignHelper {
             throw new MemberFeignSerializeFailException();
         }
         catch (Exception e){
+            log.error("Member API connection error", e);
             throw new MemberApiConnectionErrorException();
         }
         finally {
