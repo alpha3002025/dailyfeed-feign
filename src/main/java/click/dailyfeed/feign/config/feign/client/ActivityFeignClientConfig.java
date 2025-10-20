@@ -1,6 +1,7 @@
 package click.dailyfeed.feign.config.feign.client;
 
-import click.dailyfeed.feign.domain.image.ImageFeignClient;
+import click.dailyfeed.feign.domain.activity.ActivityFeignClient;
+import click.dailyfeed.feign.domain.timeline.TimelineFeignClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
 import feign.Request;
@@ -19,12 +20,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ImageFeignClientConfig {
-    @Value("${dailyfeed.services.image.feign.url}")
-    private String imageServiceUrl;
+public class ActivityFeignClientConfig {
+    @Value("${dailyfeed.services.timeline.feign.url}")
+    private String timelineUrl;
 
     @Bean
-    public ImageFeignClient imageFeignClient(
+    public ActivityFeignClient activityFeignClient(
             ErrorDecoder customErrorDecoder,
             @Qualifier("feignObjectMapper") ObjectMapper feignObjectMapper,
             Logger.Level feignLoggerLevel,
@@ -38,9 +39,9 @@ public class ImageFeignClientConfig {
         // feign-config.yaml: resilience4j.retry.instances.timelineService
         // feign-config.yaml: resilience4j.ratelimiter.instances.timelineService
         FeignDecorators feignDecorators = FeignDecorators.builder()
-                .withRetry(retryRegistry.retry("imageService"))
-                .withCircuitBreaker(circuitBreakerRegistry.circuitBreaker("imageService"))
-                .withRateLimiter(rateLimiterRegistry.rateLimiter("imageService"))
+                .withRetry(retryRegistry.retry("activityService"))
+                .withCircuitBreaker(circuitBreakerRegistry.circuitBreaker("activityService"))
+                .withRateLimiter(rateLimiterRegistry.rateLimiter("activityService"))
                 .build();
 
         return Resilience4jFeign
@@ -48,14 +49,16 @@ public class ImageFeignClientConfig {
                 .encoder(new JacksonEncoder(feignObjectMapper))
                 .decoder(new JacksonDecoder(feignObjectMapper))
                 .errorDecoder(customErrorDecoder)
-                .logger(new Slf4jLogger(ImageFeignClient.class))
+                .logger(new Slf4jLogger(TimelineFeignClient.class))
                 .logLevel(feignLoggerLevel)
                 .options(requestOptions)
                 .requestInterceptor(template -> {
+                    // Content-Type 처리
                     if ("POST".equals(template.method()) && !template.headers().containsKey("Content-Type")) {
                         template.header("Content-Type", "application/json");
                     }
 
+                    // Authorization 헤더에 Bearer 접두사 추가
                     if (template.headers().containsKey("Authorization")) {
                         template.headers().get("Authorization").forEach(value -> {
                             if (!value.startsWith("Bearer ")) {
@@ -65,6 +68,6 @@ public class ImageFeignClientConfig {
                         });
                     }
                 })
-                .target(ImageFeignClient.class, imageServiceUrl);
+                .target(ActivityFeignClient.class, timelineUrl);
     }
 }
