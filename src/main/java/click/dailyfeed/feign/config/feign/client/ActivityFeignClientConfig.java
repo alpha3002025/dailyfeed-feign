@@ -1,6 +1,6 @@
 package click.dailyfeed.feign.config.feign.client;
 
-import click.dailyfeed.feign.domain.activity.ActivityFeignClient;
+import click.dailyfeed.feign.domain.activity.MemberActivityFeignClient;
 import click.dailyfeed.feign.domain.timeline.TimelineFeignClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
@@ -25,7 +25,7 @@ public class ActivityFeignClientConfig {
     private String timelineUrl;
 
     @Bean
-    public ActivityFeignClient activityFeignClient(
+    public MemberActivityFeignClient activityFeignClient(
             ErrorDecoder customErrorDecoder,
             @Qualifier("feignObjectMapper") ObjectMapper feignObjectMapper,
             Logger.Level feignLoggerLevel,
@@ -68,6 +68,6 @@ public class ActivityFeignClientConfig {
                         });
                     }
                 })
-                .target(ActivityFeignClient.class, timelineUrl);
+                .target(MemberActivityFeignClient.class, timelineUrl);
     }
 }
