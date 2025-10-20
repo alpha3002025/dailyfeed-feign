@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ActivityFeignClientConfig {
-    @Value("${dailyfeed.services.timeline.feign.url}")
-    private String timelineUrl;
+    @Value("${dailyfeed.services.activity.feign.url}")
+    private String activityServiceUrl;
 
     @Bean
     public MemberActivityFeignClient activityFeignClient(
@@ -68,6 +68,6 @@ public class ActivityFeignClientConfig {
                         });
                     }
                 })
-                .target(MemberActivityFeignClient.class, timelineUrl);
+                .target(MemberActivityFeignClient.class, activityServiceUrl);
     }
 }
