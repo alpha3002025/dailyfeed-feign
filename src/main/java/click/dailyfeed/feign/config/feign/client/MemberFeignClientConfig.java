@@ -8,8 +8,11 @@ import feign.codec.ErrorDecoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.feign.FeignDecorators;
 import io.github.resilience4j.feign.Resilience4jFeign;
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,11 +28,19 @@ public class MemberFeignClientConfig {
             ErrorDecoder customErrorDecoder,
             @Qualifier("feignObjectMapper") ObjectMapper feignObjectMapper,
             Logger.Level feignLoggerLevel,
-            Request.Options requestOptions
+            Request.Options requestOptions,
+            CircuitBreakerRegistry circuitBreakerRegistry,
+            RetryRegistry retryRegistry,
+            RateLimiterRegistry rateLimiterRegistry
     ) {
+        // YAML 설정에서 정의된 인스턴스를 Registry에서 가져옴
+        // feign-config.yaml: resilience4j.circuitbreaker.instances.timelineService
+        // feign-config.yaml: resilience4j.retry.instances.timelineService
+        // feign-config.yaml: resilience4j.ratelimiter.instances.timelineService
         FeignDecorators feignDecorators = FeignDecorators.builder()
-//                .withCircuitBreaker()
-//                .withRateLimiter()
+                .withRetry(retryRegistry.retry("memberService"))
+                .withCircuitBreaker(circuitBreakerRegistry.circuitBreaker("memberService"))
+                .withRateLimiter(rateLimiterRegistry.rateLimiter("memberService"))
                 .build();
 
         return Resilience4jFeign
