@@ -96,7 +96,7 @@ public class MemberActivityFeignHelper {
         }
     }
 
-    public List<MemberProfileDto.Summary> createPostLikeActivity(MemberActivityDto.PostLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public List<MemberProfileDto.Summary> createPostLikeMemberActivity(MemberActivityDto.PostLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createPostLikeActivity(request, token);
         if (feignResponse.status() != 200 || feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
@@ -129,7 +129,7 @@ public class MemberActivityFeignHelper {
         }
     }
 
-    public List<MemberProfileDto.Summary> createCommentLikeActivity(MemberActivityDto.CommentLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public List<MemberProfileDto.Summary> createCommentLikeMemberActivity(MemberActivityDto.CommentLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createCommentLikeActivity(request, token);
         if (feignResponse.status() != 200 || feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
