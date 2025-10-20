@@ -2,7 +2,6 @@ package click.dailyfeed.feign.domain.activity;
 
 import click.dailyfeed.code.domain.activity.dto.MemberActivityDto;
 import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
-import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.code.global.feign.exception.FeignApiCommunicationFailException;
 import click.dailyfeed.code.global.feign.exception.FeignApiSerializationFailException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,15 +28,15 @@ public class MemberActivityFeignHelper {
     @Qualifier("feignObjectMapper")
     private final ObjectMapper feignObjectMapper;
 
-    public List<MemberProfileDto.Summary> createPostsMemberActivity(MemberActivityDto.PostActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public MemberActivityDto.MemberActivity createPostsMemberActivity(MemberActivityDto.PostActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createPostsMemberActivity(request, token);
-        if (feignResponse.status() != 200 || feignResponse.status() != 201) {
+        if (feignResponse.status() != 200 && feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
         }
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
+            DailyfeedServerResponse<MemberActivityDto.MemberActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -63,15 +61,15 @@ public class MemberActivityFeignHelper {
         }
     }
 
-    public List<MemberProfileDto.Summary> createCommentsMemberActivity(MemberActivityDto.CommentActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public MemberActivityDto.MemberActivity createCommentsMemberActivity(MemberActivityDto.CommentActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createCommentsMemberActivity(request, token);
-        if (feignResponse.status() != 200 || feignResponse.status() != 201) {
+        if (feignResponse.status() != 200 && feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
         }
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
+            DailyfeedServerResponse<MemberActivityDto.MemberActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -96,15 +94,15 @@ public class MemberActivityFeignHelper {
         }
     }
 
-    public List<MemberProfileDto.Summary> createPostLikeMemberActivity(MemberActivityDto.PostLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public MemberActivityDto.MemberActivity createPostLikeMemberActivity(MemberActivityDto.PostLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createPostLikeActivity(request, token);
-        if (feignResponse.status() != 200 || feignResponse.status() != 201) {
+        if (feignResponse.status() != 200 && feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
         }
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
+            DailyfeedServerResponse<MemberActivityDto.MemberActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
@@ -129,15 +127,15 @@ public class MemberActivityFeignHelper {
         }
     }
 
-    public List<MemberProfileDto.Summary> createCommentLikeMemberActivity(MemberActivityDto.CommentLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
+    public MemberActivityDto.MemberActivity createCommentLikeMemberActivity(MemberActivityDto.CommentLikeActivityRequest request, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberActivityFeignClient.createCommentLikeActivity(request, token);
-        if (feignResponse.status() != 200 || feignResponse.status() != 201) {
+        if (feignResponse.status() != 200 && feignResponse.status() != 201) {
             throw new FeignApiCommunicationFailException();
         }
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-            DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
+            DailyfeedServerResponse<MemberActivityDto.MemberActivity> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
             propagateTokenRefreshHeader(feignResponse, httpResponse);
 
             return apiResponse.getData();
