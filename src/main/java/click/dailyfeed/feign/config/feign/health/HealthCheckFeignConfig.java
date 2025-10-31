@@ -1,12 +1,15 @@
 package click.dailyfeed.feign.config.feign.health;
 
-import click.dailyfeed.feign.domain.health.*;
+import click.dailyfeed.feign.domain.health.ActivityHealthCheckClient;
+import click.dailyfeed.feign.domain.health.ContentHealthCheckClient;
+import click.dailyfeed.feign.domain.health.ImageHealthCheckClient;
+import click.dailyfeed.feign.domain.health.TimelineHealthCheckClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
 import feign.Request;
+import feign.Response;
+import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.feign.FeignDecorators;
@@ -16,6 +19,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Health Check 전용 Feign Client 설정
@@ -38,6 +45,20 @@ public class HealthCheckFeignConfig {
     private String imageServiceUrl;
 
     /**
+     * Health Check 전용 String Decoder
+     * text/plain 응답을 String으로 변환
+     */
+    private static class StringDecoder implements Decoder {
+        @Override
+        public Object decode(Response response, Type type) throws IOException {
+            if (response.body() == null) {
+                return null;
+            }
+            return new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
      * Timeline 서비스 Health Check Client
      * timelineServiceHealth Circuit Breaker 사용
      */
@@ -55,8 +76,7 @@ public class HealthCheckFeignConfig {
 
         return Resilience4jFeign
                 .builder(feignDecorators)
-                .encoder(new JacksonEncoder(feignObjectMapper))
-                .decoder(new JacksonDecoder(feignObjectMapper))
+                .decoder(new StringDecoder())  // text/plain 응답을 위한 String Decoder
                 .errorDecoder(customErrorDecoder)
                 .logger(new Slf4jLogger(TimelineHealthCheckClient.class))
                 .logLevel(Logger.Level.BASIC)  // Health Check는 BASIC 레벨로
@@ -82,8 +102,7 @@ public class HealthCheckFeignConfig {
 
         return Resilience4jFeign
                 .builder(feignDecorators)
-                .encoder(new JacksonEncoder(feignObjectMapper))
-                .decoder(new JacksonDecoder(feignObjectMapper))
+                .decoder(new StringDecoder())  // text/plain 응답을 위한 String Decoder
                 .errorDecoder(customErrorDecoder)
                 .logger(new Slf4jLogger(ContentHealthCheckClient.class))
                 .logLevel(Logger.Level.BASIC)
@@ -109,8 +128,7 @@ public class HealthCheckFeignConfig {
 
         return Resilience4jFeign
                 .builder(feignDecorators)
-                .encoder(new JacksonEncoder(feignObjectMapper))
-                .decoder(new JacksonDecoder(feignObjectMapper))
+                .decoder(new StringDecoder())  // text/plain 응답을 위한 String Decoder
                 .errorDecoder(customErrorDecoder)
                 .logger(new Slf4jLogger(ActivityHealthCheckClient.class))
                 .logLevel(Logger.Level.BASIC)
@@ -136,8 +154,7 @@ public class HealthCheckFeignConfig {
 
         return Resilience4jFeign
                 .builder(feignDecorators)
-                .encoder(new JacksonEncoder(feignObjectMapper))
-                .decoder(new JacksonDecoder(feignObjectMapper))
+                .decoder(new StringDecoder())  // text/plain 응답을 위한 String Decoder
                 .errorDecoder(customErrorDecoder)
                 .logger(new Slf4jLogger(ImageHealthCheckClient.class))
                 .logLevel(Logger.Level.BASIC)
