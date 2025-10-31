@@ -5,6 +5,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -42,7 +43,7 @@ public class ServiceHealthCheckScheduler {
     private final ImageHealthCheckClient imageHealthCheckClient;
     private final CircuitBreakerRegistry circuitBreakerRegistry;
 
-    @org.springframework.beans.factory.annotation.Value("${spring.application.name}")
+    @Value("${spring.application.name}")
     private String applicationName;
 
     /**
