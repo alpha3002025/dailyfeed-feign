@@ -166,9 +166,9 @@ public class ServiceHealthCheckScheduler {
                 log.error("[Health Check] {} health check FAILED - Circuit Breaker state changed: {} -> {}",
                     serviceName, state, newState, e);
             } else {
-                // 상태 변화가 없으면 WARN 레벨 (전체 스택 트레이스 출력)
-                log.warn("[Health Check] {} health check FAILED (CB State: {})",
-                    serviceName, newState, e);
+                // 상태 변화가 없으면 WARN 레벨
+                log.warn("[Health Check] {} health check FAILED (CB State: {}): {}",
+                    serviceName, newState, e.getMessage());
             }
         }
     }
