@@ -1,15 +1,12 @@
 package click.dailyfeed.feign.domain.member;
 
 import click.dailyfeed.code.domain.member.follow.dto.FollowDto;
-import click.dailyfeed.code.domain.member.member.code.MemberHeaderCode;
 import click.dailyfeed.code.domain.member.member.dto.MemberDto;
 import click.dailyfeed.code.domain.member.member.dto.MemberProfileDto;
 import click.dailyfeed.code.domain.member.member.exception.MemberApiConnectionErrorException;
 import click.dailyfeed.code.domain.member.member.exception.MemberFeignSerializeFailException;
-import click.dailyfeed.code.domain.member.member.exception.MemberForbiddenException;
-import click.dailyfeed.code.domain.member.member.exception.MemberNotFoundException;
-import click.dailyfeed.code.domain.member.member.exception.MemberUnauthorizedException;
 import click.dailyfeed.code.global.web.response.DailyfeedServerResponse;
+import click.dailyfeed.feign.global.web.FeignResponseHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -22,7 +19,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,21 +30,18 @@ import java.util.stream.Collectors;
 @Service
 public class MemberFeignHelper {
     private final MemberFeignClient memberClient;
+    private final FeignResponseHandler feignResponseHandler;
 
     @Qualifier("feignObjectMapper")
     private final ObjectMapper feignObjectMapper;
 
     public MemberDto.Member getMember(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMember(token);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -69,15 +66,11 @@ public class MemberFeignHelper {
 
     public MemberDto.Member getMemberById(Long id, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMemberById(id, token);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberDto.Member> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberDto.Member>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -101,49 +94,12 @@ public class MemberFeignHelper {
     }
 
     public MemberProfileDto.MemberProfile getMyProfile(String token, HttpServletResponse httpResponse) {
-        log.debug("Calling member service getMyProfile with token starting with: {}...",
-                  token != null && token.length() > 20 ? token.substring(0, 20) : "null");
-
         Response feignResponse = memberClient.getMyProfile(token);
-        log.debug("Member service getMyProfile response status: {}", feignResponse.status());
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            String errorBody = null;
-            try {
-                if (feignResponse.body() != null) {
-                    errorBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
-                }
-            } catch (Exception e) {
-                log.error("Failed to read error response body", e);
-            }
-
-            log.error("Member service getMyProfile failed - status: {}, body: {}",
-                      feignResponse.status(), errorBody);
-
-            // HTTP 상태 코드에 따른 적절한 예외 처리
-            int status = feignResponse.status();
-            if (status == 401) {
-                log.error("Unauthorized request to member service - invalid or expired token");
-                throw new MemberUnauthorizedException();
-            } else if (status == 403) {
-                log.error("Forbidden request to member service - insufficient permissions");
-                throw new MemberForbiddenException();
-            } else if (status == 404) {
-                log.error("Member not found in member service");
-                throw new MemberNotFoundException();
-            } else if (status >= 500) {
-                log.error("Member service internal error - status: {}", status);
-                throw new MemberApiConnectionErrorException();
-            } else {
-                log.error("Unexpected member service error - status: {}", status);
-                throw new MemberApiConnectionErrorException();
-            }
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             log.debug("Successfully retrieved member profile from member service");
             return apiResponse.getData();
         }
@@ -170,15 +126,11 @@ public class MemberFeignHelper {
 
     public MemberProfileDto.Summary getMyProfileSummary(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyProfileSummary(token);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberProfileDto.Summary> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.Summary>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -203,15 +155,11 @@ public class MemberFeignHelper {
 
     public MemberProfileDto.MemberProfile getMemberProfileById(Long memberId, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getProfileById(token, memberId);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberProfileDto.MemberProfile> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.MemberProfile>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -236,15 +184,11 @@ public class MemberFeignHelper {
 
     public MemberProfileDto.Summary getMemberSummaryById(Long memberId, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getSummaryById(token, memberId);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<MemberProfileDto.Summary> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<MemberProfileDto.Summary>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -270,15 +214,11 @@ public class MemberFeignHelper {
 
     public FollowDto.FollowScrollPage getMyFollowersFollowings(Integer page, Integer size, String sort, String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowersFollowings(token, page, size, sort);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<FollowDto.FollowScrollPage> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -303,15 +243,11 @@ public class MemberFeignHelper {
 
     public List<MemberProfileDto.Summary> getMyFollowingMembers(String token, HttpServletResponse httpResponse) {
         Response feignResponse = memberClient.getMyFollowingMembers(token);
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -343,15 +279,11 @@ public class MemberFeignHelper {
                 .build();
 
         Response feignResponse = memberClient.getMemberList(request, token);
-        if (feignResponse.status() != 200) {
-            throw new MemberNotFoundException();
-        }
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             return apiResponse.getData();
         }
         catch (InvalidFormatException e){
@@ -380,17 +312,11 @@ public class MemberFeignHelper {
                 .build();
 
         Response feignResponse = memberClient.getMemberList(request, token);
-        propagateTokenRefreshHeader(feignResponse, httpResponse);
-
-        if (feignResponse.status() != 200) {
-            throw new MemberApiConnectionErrorException();
-        }
+        feignResponseHandler.checkResponseHeadersAndStatusOrThrow(feignResponse, httpResponse);
 
         try{
             String feignResponseBody = IOUtils.toString(feignResponse.body().asInputStream(), StandardCharsets.UTF_8);
             DailyfeedServerResponse<List<MemberProfileDto.Summary>> apiResponse = feignObjectMapper.readValue(feignResponseBody, new TypeReference<DailyfeedServerResponse<List<MemberProfileDto.Summary>>>() {});
-            propagateTokenRefreshHeader(feignResponse, httpResponse);
-
             List<MemberProfileDto.Summary> authors = apiResponse.getData();
             return authors.stream().collect(Collectors.toMap(MemberProfileDto.Summary::getMemberId, author -> author));
         }
@@ -440,18 +366,4 @@ public class MemberFeignHelper {
 //            }
 //        }
 //    }
-
-    public void propagateTokenRefreshHeader(Response feignResponse, HttpServletResponse httpResponse) {
-        final String headerKey = MemberHeaderCode.X_TOKEN_REFRESH_NEEDED.getHeaderKey();
-        Collection<String> headers = feignResponse.headers().get(headerKey);
-
-        if(headers != null && !headers.isEmpty()){
-            String headerValue = headers.iterator().next();
-            if(headerValue != null && !headerValue.isEmpty()){
-                if ("true".equalsIgnoreCase(headerValue)){
-                    httpResponse.setHeader(headerKey, "true");
-                }
-            }
-        }
-    }
 }
